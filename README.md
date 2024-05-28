@@ -4,19 +4,40 @@ Damn Vulnerable Kernel Module for FreeBSD and CheriBSD.
 
 ## Vulnerabilities
 
-- Buffer overflow
+- Buffer overflow (write)
     - Stack
         - Standard
         - Subobject
-    <!-- - Heap
-        - General purpose kmalloc
+    - Heap
+        - General purpose kmem
             - Standard
             - Subobject
-        - Special bucket
+        - Dedicated UMA zone
             - Standard
             - Subobject
-        - Page, Double fetch -->
-
+- Linear memory disclosure (read)
+    - Stack
+        - Standard
+        - Subobject
+    - Heap
+        - General purpose kmem
+            - Standard
+            - Subobject
+        - Dedicated UMA zone
+            - Standard
+            - Subobject
+- Heap use after free (trigger malloc, free, read and write in separate invocations)
+    - General purpose kmem zone (speify the size)
+    - Dedicated UMA zone (specify the name)
+- Stack use after free (TODO: hardcoded, how do I make it more flexible?)
+- Arbitrary memory disclosure (read)
+- Arbitrary overwrite (write)
+- Arbitrary integer/pointer increment
+- Pointer hijack <!-- I use it to test ret2dir in CheriBSD -->
+- Uninitialized memory (read/write)
+    - Stack
+    - Heap
+- Double fetch
 
 ## Build instructions
 

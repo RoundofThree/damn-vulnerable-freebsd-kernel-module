@@ -31,35 +31,19 @@
 
 #include "utils.h"
 
-/* Constants */
+/// Kernel malloc(9)
 
-#ifndef DVKM_IOCTL
+int uaf_heap_ioctl_handler(struct dvkm_io *io)
+{
+    int error;
 
-#define DKM_IOCTL ('I')
-#define DVKM_IOCTL_BUFFER_OVERFLOW_STACK _IOWR(DKM_IOCTL, 1, struct dvkm_io)
-#define DVKM_IOCTL_BUFFER_OVERFLOW_STACK_SUBOBJECT _IOWR(DKM_IOCTL, 2, struct dvkm_io)
-#define DVKM_IOCTL_BUFFER_OVERFLOW_HEAP _IOWR(DKM_IOCTL, 3, struct dvkm_io)
-#define DVKM_IOCTL_BUFFER_OVERFLOW_HEAP_SUBOBJECT _IOWR(DKM_IOCTL, 4, struct dvkm_io)
-#define DVKM_IOCTL_BUFFER_OVERFLOW_HEAP_UMA _IOWR(DKM_IOCTL, 5, struct dvkm_io)
-#define DVKM_IOCTL_BUFFER_OVERFLOW_HEAP_UMA_SUBOBJECT _IOWR(DKM_IOCTL, 6, struct dvkm_io)
-#define DVKM_IOCTL_UAF_HEAP _IOWR(DKM_IOCTL, 7, struct dvkm_io)
-#define DVKM_IOCTL_UAF_HEAP_UMA _IOWR(DKM_IOCTL, 8, struct dvkm_io)
-#define DVKM_IOCTL_UAF_STACK _IOWR(DKM_IOCTL, 9, struct dvkm_io)
-#define DVKM_IOCTL_ARBITRARY_READ _IOWR(DKM_IOCTL, 10, struct dvkm_io)
-#define DVKM_IOCTL_ARBITRARY_WRITE _IOWR(DKM_IOCTL, 11, struct dvkm_io)
-#define DVKM_IOCTL_ARBITRARY_INCREMENT _IOWR(DKM_IOCTL, 12, struct dvkm_io)
-#define DVKM_IOCTL_DOUBLE_FETCH _IOWR(DKM_IOCTL, 13, struct dvkm_io)
-// TODO: pointer hijack
+    return (error);
+}
 
-#endif /* DVKM_IOCTL */
+/// Specific UMA zone
 
-MALLOC_DECLARE(M_DVKM);
-MALLOC_DEFINE(M_DVKM, "dvkmbuf", "DVKM general heap buffer");
-
-
-/* Function prototypes */
-static d_open_t      dvkm_open;
-static d_close_t     dvkm_close;
-static d_read_t      dvkm_read;
-static d_write_t     dvkm_write;
-static d_ioctl_t     dvkm_ioctl;
+int uaf_uma_ioctl_handler(struct dvkm_io *io)
+{
+    int error;
+    return (error);
+}

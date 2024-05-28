@@ -41,6 +41,8 @@
 
 /* Constants */
 #define KBUFSIZE 0x100
+#define MAX_DVKM_ZONES 0x10
+#define ZONE_NAME_MAXLEN 0x50
 
 /* Structs */
 struct dvkm_io {
@@ -56,7 +58,45 @@ struct dvkm_io {
     /* Buffer overflow specific */
     // XXXR3: in the future, we can select different subobject scenarios:
     // eg. what data or struct to corrupt
+    int is_disclosure;  // 1 if it's a read else write
+
+    /* Heap specific */
+    size_t alloc_size;  // malloc(9) or UMA zone size
+
+    /* UMA specific */
+    char *zone_name;    // XXXR3: possibly I could manually walk memory structs
+                        // to get a pointer to zone objects given a name
+    int secondary_zone; // XXXR3: unused for now. Create a secondary zone
+
+    /* Heap use after free specific */
+    int kmem_operation; // malloc, free, read, write
+
+    /* Stack use after free specific */
+    
+    /* Arbitrary gadgets specific */
+    void *target_addr;  // (kernel) address to read, write or increment
+
+    /* Double fetch specific */
 };
+
+struct buffer_overflow_obj {
+    char bo_buf[KBUFSIZE];
+    // fields that could be reachable:
+    struct thread *bo_td;  // XXXR3: can customize this
+};
+
+// allocate up to 0x10 zones of different size
+uma_zone_t dvkm_zones[MAX_DVKM_ZONES];
+size_t dvkm_zones_count;
 
 /* Function prototypes */
 int buffer_overflow_stack_ioctl_handler(struct dvkm_io *io, int bo_subobject);
+int buffer_overflow_heap_ioctl_handler(struct dvkm_io *io, int bo_subobject);
+int buffer_overflow_uma_ioctl_handler(struct dvkm_io *io, int bo_subobject);
+int uaf_heap_ioctl_handler(struct dvkm_io *io);
+int uaf_uma_ioctl_handler(struct dvkm_io *io);
+int uaf_stack_ioctl_handler(struct dvkm_io *io);
+int arbitrary_read_ioctl_handler(struct dvkm_io *io);
+int arbitrary_write_ioctl_handler(struct dvkm_io *io);
+int arbitrary_increment_ioctl_handler(struct dvkm_io *io);
+int double_fetch_ioctl_handler(struct dvkm_io *io);

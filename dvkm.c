@@ -100,6 +100,61 @@ dvkm_ioctl(struct cdev *dev, u_long cmd, caddr_t arg, int flags,
         error = buffer_overflow_stack_ioctl_handler(io, 1);
         uprintf("[+] Finished processing buffer overflow stack subobject ioctl request\n");
         break;
+	case DVKM_IOCTL_BUFFER_OVERFLOW_HEAP:
+        uprintf("[+] Starting to process buffer overflow heap ioctl request\n");
+        error = buffer_overflow_heap_ioctl_handler(io, 0);
+        uprintf("[+] Finished processing buffer overflow heap ioctl request\n");
+        break;
+	case DVKM_IOCTL_BUFFER_OVERFLOW_HEAP_SUBOBJECT:
+        uprintf("[+] Starting to process buffer overflow heap subobject ioctl request\n");
+        error = buffer_overflow_heap_ioctl_handler(io, 1);
+        uprintf("[+] Finished processing buffer overflow heap subobject ioctl request\n");
+        break;
+	case DVKM_IOCTL_BUFFER_OVERFLOW_HEAP_UMA:
+        uprintf("[+] Starting to process buffer overflow in UMA zone ioctl request\n");
+        error = buffer_overflow_uma_ioctl_handler(io, 0);
+        uprintf("[+] Finished processing buffer overflow in UMA zone ioctl request\n");
+        break;
+	case DVKM_IOCTL_BUFFER_OVERFLOW_HEAP_UMA_SUBOBJECT:
+        uprintf("[+] Starting to process buffer overflow in UMA zone subobject ioctl request\n");
+        error = buffer_overflow_uma_ioctl_handler(io, 1);
+        uprintf("[+] Finished processing buffer overflow in UMA zone subobject ioctl request\n");
+        break;
+	case DVKM_IOCTL_UAF_HEAP:
+        uprintf("[+] Starting to process heap UAF ioctl request\n");
+        error = uaf_heap_ioctl_handler(io);
+        uprintf("[+] Finished processing heap UAF ioctl request\n");
+        break;
+	case DVKM_IOCTL_UAF_HEAP_UMA:
+        uprintf("[+] Starting to process UMA zone UAF ioctl request\n");
+        error = uaf_uma_ioctl_handler(io);
+        uprintf("[+] Finished processing UMA zone UAF ioctl request\n");
+        break;
+	case DVKM_IOCTL_UAF_STACK:
+        uprintf("[+] Starting to process stack UAF ioctl request\n");
+        error = uaf_stack_ioctl_handler(io);
+        uprintf("[+] Finished processing stack UAF ioctl request\n");
+        break;
+	case DVKM_IOCTL_ARBITRARY_READ:
+        uprintf("[+] Starting to process arbitrary read ioctl request\n");
+        error = arbitrary_read_ioctl_handler(io);
+        uprintf("[+] Finished processing arbitrary read ioctl request\n");
+        break;
+	case DVKM_IOCTL_ARBITRARY_WRITE:
+        uprintf("[+] Starting to process arbitrary write ioctl request\n");
+        error = arbitrary_write_ioctl_handler(io);
+        uprintf("[+] Finished processing arbitrary write ioctl request\n");
+        break;
+	case DVKM_IOCTL_ARBITRARY_INCREMENT:
+        uprintf("[+] Starting to process arbitrary increment ioctl request\n");
+        error = arbitrary_increment_ioctl_handler(io);
+        uprintf("[+] Finished processing arbitrary increment ioctl request\n");
+        break;
+	case DVKM_IOCTL_DOUBLE_FETCH:
+        uprintf("[+] Starting to process double fetch ioctl request\n");
+        error = double_fetch_ioctl_handler(io);
+        uprintf("[+] Finished processing double fetch ioctl request\n");
+        break;
     default:
         error = ENOTTY;
         break;
@@ -126,13 +181,18 @@ dvkm_loader(struct module *m, int type, void *arg)
 		if (error != 0)
 			break;
 
+        memset(dvkm_zones, 0, sizeof(dvkm_zones));
+        dvkm_zones_count = 0;
+        dvkm_zones[dvkm_zones_count++] = uma_zcreate("dvkm default zone", sizeof(struct buffer_overflow_obj),
+            NULL, NULL, NULL, NULL, UMA_ALIGN_PTR, 0);
+
 		uprintf("[+] DVKM VULNERABLE driver loaded. Remember to unload it.\n");
 		break;
 	case MOD_UNLOAD:
-		destroy_dev(dvkm_cdev);
+                destroy_dev(dvkm_cdev);
 
-		uprintf("[+] DVKM VULNERABLE driver unloaded.\n");
-		break;
+                uprintf("[+] DVKM VULNERABLE driver unloaded.\n");
+                break;
 	default:
 		error = EOPNOTSUPP;
 		break;
