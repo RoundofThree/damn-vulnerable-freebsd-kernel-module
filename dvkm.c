@@ -92,8 +92,13 @@ dvkm_ioctl(struct cdev *dev, u_long cmd, caddr_t arg, int flags,
     switch (cmd) {
     case DVKM_IOCTL_BUFFER_OVERFLOW_STACK:
         uprintf("[+] Starting to process buffer overflow stack ioctl request\n");
-        error = buffer_overflow_stack_ioctl_handler(io);
+        error = buffer_overflow_stack_ioctl_handler(io, 0);
         uprintf("[+] Finished processing buffer overflow stack ioctl request\n");
+        break;
+	case DVKM_IOCTL_BUFFER_OVERFLOW_STACK_SUBOBJECT:
+        uprintf("[+] Starting to process buffer overflow stack subobject ioctl request\n");
+        error = buffer_overflow_stack_ioctl_handler(io, 1);
+        uprintf("[+] Finished processing buffer overflow stack subobject ioctl request\n");
         break;
     default:
         error = ENOTTY;

@@ -31,30 +31,64 @@
 
 #include "utils.h"
 
+struct buffer_overflow_obj {
+    char bo_buf[KBUFSIZE];
+    // fields that could be reachable:
+    struct thread *bo_td;
+};
+
 static int __attribute__((no_stack_protector))
-trigger_buffer_overflow_stack(void *ubuf, size_t size)
+buffer_overflow_stack(void *ubuf, size_t ubufsize, int preserve_cheri_caps)
 {
-    int error = 0;
-    // TODO: 8 bytes overflow, hardcoded, make it more flexible
-    uprintf("Unimplemented\n");
+    char kbuf[KBUFSIZE];
+    int error;
+
+    if (preserve_cheri_caps) {
+        error = copyincap(ubuf, kbuf, ubufsize);
+    } else {
+        error = copyin(ubuf, kbuf, ubufsize);
+    }
+
+    return (error);
+}
+
+static int
+buffer_overflow_stack_subobject(void *ubuf, size_t ubufsize, int preserve_cheri_caps)
+{
+    struct buffer_overflow_obj bo_obj;
+    int error;
+
+    bo_obj.bo_td = curthread;
+
+    if (preserve_cheri_caps) {
+        error = copyincap(ubuf, bo_obj.bo_buf, ubufsize);
+    } else {
+        error = copyin(ubuf, bo_obj.bo_buf, ubufsize);
+    }
 
     return (error);
 }
 
 int
-buffer_overflow_stack_ioctl_handler(struct dvkm_io *io)
+buffer_overflow_stack_ioctl_handler(struct dvkm_io *io, int bo_subobject)
 {
-    size_t ubufsize = 0;
+    size_t ubufsize;
     void *ubuf = NULL;
+    int preserve_cheri_caps;
     int error;
 
     ubuf = io->input_buffer;
     ubufsize = io->input_buffer_size;
+    preserve_cheri_caps = io->preserve_cheri_caps;
 
-    if (ubuf) {
-        error = trigger_buffer_overflow_stack(ubuf, ubufsize);
+    if (ubuf == NULL) {
+        return (EINVAL);
+    }
+
+    if (bo_subobject) {
+        error = buffer_overflow_stack_subobject(ubuf, ubufsize, preserve_cheri_caps);
     } else {
-        error = EINVAL;
+        error = buffer_overflow_stack(ubuf, ubufsize, preserve_cheri_caps);
     }
 
     return error;

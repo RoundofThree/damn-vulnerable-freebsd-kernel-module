@@ -37,6 +37,7 @@
 
 #define DKM_IOCTL ('I')
 #define DVKM_IOCTL_BUFFER_OVERFLOW_STACK _IOWR(DKM_IOCTL, 1, struct dvkm_io)
+#define DVKM_IOCTL_BUFFER_OVERFLOW_STACK_SUBOBJECT _IOWR(DKM_IOCTL, 2, struct dvkm_io)
 
 #endif /* DVKM_IOCTL */
 

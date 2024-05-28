@@ -39,13 +39,24 @@
 #include <sys/malloc.h>
 #include <sys/ioccom.h>
 
+/* Constants */
+#define KBUFSIZE 0x100
+
+/* Structs */
 struct dvkm_io {
+    /* General I/O fields */
 	void *input_buffer;
     size_t input_buffer_size;
     void *output_buffer;
     size_t output_buffer_size;
+
+    /* CheriBSD specific */
+    int preserve_cheri_caps;
+
+    /* Buffer overflow specific */
+    // XXXR3: in the future, we can select different subobject scenarios:
+    // eg. what data or struct to corrupt
 };
 
 /* Function prototypes */
-
-int buffer_overflow_stack_ioctl_handler(struct dvkm_io *io);
+int buffer_overflow_stack_ioctl_handler(struct dvkm_io *io, int bo_subobject);

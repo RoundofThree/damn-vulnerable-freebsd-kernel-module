@@ -8,15 +8,14 @@ Damn Vulnerable Kernel Module for FreeBSD and CheriBSD.
     - Stack
         - Standard
         - Subobject
-    - Heap
+    <!-- - Heap
         - General purpose kmalloc
             - Standard
             - Subobject
         - Special bucket
             - Standard
             - Subobject
-        - Page
-- Double fetch
+        - Page, Double fetch -->
 
 
 ## Build instructions
@@ -37,3 +36,8 @@ make
 ```
 
 Build artifacts are in `obj/`.
+
+## References
+
+- [Damn Vulnerable Kernel Module for kernel fuzzing](https://github.com/hardik05/Damn_Vulnerable_Kernel_Module/tree/main)
+- [HackSys Extreme Vulnerable Driver (HEVD)](https://github.com/hacksysteam/HackSysExtremeVulnerableDriver/tree/master)
