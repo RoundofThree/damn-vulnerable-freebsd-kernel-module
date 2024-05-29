@@ -189,10 +189,14 @@ dvkm_loader(struct module *m, int type, void *arg)
 		uprintf("[+] DVKM VULNERABLE driver loaded. Remember to unload it.\n");
 		break;
 	case MOD_UNLOAD:
-                destroy_dev(dvkm_cdev);
+        while (dvkm_zones_count > 0) {
+            uma_zdestroy(dvkm_zones[--dvkm_zones_count]);
+        }
 
-                uprintf("[+] DVKM VULNERABLE driver unloaded.\n");
-                break;
+        destroy_dev(dvkm_cdev);
+
+        uprintf("[+] DVKM VULNERABLE driver unloaded.\n");
+        break;
 	default:
 		error = EOPNOTSUPP;
 		break;

@@ -31,9 +31,43 @@
 
 #include "utils.h"
 
+// XXXR3: this is currently too simplistic
+// consider other scenarios: 
+//   - No pointer escape but value from unitialized stack, maybe to kROP
+//   - Pointer escape through global
+//   - Pointer escape through return params
+// And victim targets:
+//   - Escaped pointer spans an area of the current stack frame (write => could impact control flow, read => could leak and actually also impact control flow)
+//   - Escaped pointer spans an area out of the current stack frame (write => umm, read => could leak and impact control flow)
+//   - Escaped pointer points to a pointer that spans an area of the current stack frame => fakeobj? 
+//   - Escaped pointer points to a pointer that spans an area out of the current stack frame => if powerful enough, trigger derive ptrs?
+
+static void
+func1(void **out)
+{
+    struct uaf_obj obj;
+
+    *out = &obj;   // escape
+}
+
 int uaf_stack_ioctl_handler(struct dvkm_io *io)
 {
     int error;
+    void **objp;
+    void *obj, ubuf;
+    size_t ubufsize;
+
+    ubuf = io->output_buffer;
+    ubufsize = io->output_buffer_size;
+
+    if (ubuf == NULL || ubufsize == 0) {
+        return (EINVAL);
+    }
+
+    func1(objp);
+    obj = *objp;
+
+    error = copyoutcap(obj, ubuf, ubufsize);
 
     return (error);
 }

@@ -44,6 +44,10 @@
 #define MAX_DVKM_ZONES 0x10
 #define ZONE_NAME_MAXLEN 0x50
 
+/* Heap operations */
+#define KHEAP_MALLOC 1
+#define KHEAP_FREE 2
+
 /* Structs */
 struct dvkm_io {
     /* General I/O fields */
@@ -66,23 +70,35 @@ struct dvkm_io {
     /* UMA specific */
     char *zone_name;    // XXXR3: possibly I could manually walk memory structs
                         // to get a pointer to zone objects given a name
+                        // For now, we just get dvkm_zones, for which we have 
+                        // a mapping of uma_zone_t and names. 
+                        // This is consumed by malloc, uma_zalloc and uma_zfree requests
     int secondary_zone; // XXXR3: unused for now. Create a secondary zone
 
     /* Heap use after free specific */
-    int kmem_operation; // malloc, free, read, write
+    int kheap_operation; // eg. KHEAP_MALLOC
+    int kheap_addr;      // consumed by free
 
     /* Stack use after free specific */
     
     /* Arbitrary gadgets specific */
     void *target_addr;  // (kernel) address to read, write or increment
+    int increment;      // how much to increment (can be negative)
 
     /* Double fetch specific */
+    
 };
 
 struct buffer_overflow_obj {
     char bo_buf[KBUFSIZE];
     // fields that could be reachable:
     struct thread *bo_td;  // XXXR3: can customize this
+};
+
+struct uaf_obj {
+    char uaf_buf[KBUFSIZE];
+    // fields that could be reachable:
+    struct thread *uaf_td;  // XXXR3: can customize this
 };
 
 // allocate up to 0x10 zones of different size

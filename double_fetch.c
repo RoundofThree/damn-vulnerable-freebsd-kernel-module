@@ -31,9 +31,20 @@
 
 #include "utils.h"
 
+// hardcoded TOCTOU
 int double_fetch_ioctl_handler(struct dvkm_io *io)
 {
     int error;
+    char kbuf[KBUFSIZE];
+    
+    // check
+    if (io->input_buffer_size >= KBUFSIZE) {
+        return (EINVAL);
+    }
+
+    // use
+    error = copyincap(io->input_buffer, kbuf, io->input_buffer_size);
+    kbuf[io->input_buffer_size - 1] = '\0';
 
     return (error);
 }

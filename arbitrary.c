@@ -31,23 +31,62 @@
 
 #include "utils.h"
 
+// subject to PAN/SMAP
 int arbitrary_read_ioctl_handler(struct dvkm_io *io)
 {
-    int error;
+    int error, preserve_cheri_caps;
+    void *target_addr, ubuf;
+    size_t ubufsize;
+
+    target_addr = io->target_addr;
+    ubuf = io->output_buffer;
+    ubufsize = io->output_buffer_size;
+    preserve_cheri_caps = io->preserve_cheri_caps;
+
+    if (preserve_cheri_caps) {
+        error = copyoutcap(target_addr, ubuf, ubufsize);
+    } else {
+        error = copyout(target_addr, ubuf, ubufsize);
+    }
 
     return (error);
 }
 
 int arbitrary_write_ioctl_handler(struct dvkm_io *io);
 {
-    int error;
+    int error, preserve_cheri_caps;
+    void *target_addr, ubuf;
+    size_t ubufsize;
+
+    target_addr = io->target_addr;
+    ubuf = io->input_buffer;
+    ubufsize = io->input_buffer_size;
+    preserve_cheri_caps = io->preserve_cheri_caps;
+
+    if (preserve_cheri_caps) {
+        error = copyincap(ubuf, target_addr, ubufsize);
+    } else {
+        error = copyin(ubuf, target_addr, ubufsize);
+    }
 
     return (error);
 }
 
 int arbitrary_increment_ioctl_handler(struct dvkm_io *io)
 {
-    int error;
+    int error = 0, preserve_cheri_caps;
+    void *target_addr;
+    int increment;
+
+    target_addr = io->target_addr;
+    preserve_cheri_caps = io->preserve_cheri_caps;
+    increment = io->increment;
+
+    if (preserve_cheri_caps) {
+        *(uintptr_t *)target_addr += 1;
+    } else {
+        *(char *)target_addr += 1;
+    }
 
     return (error);
 }
