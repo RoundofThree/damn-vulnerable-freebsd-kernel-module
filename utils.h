@@ -39,6 +39,18 @@
 #include <sys/malloc.h>
 #include <sys/ioccom.h>
 
+#include <vm/vm.h>
+#include <vm/uma.h>
+#include <vm/vm_param.h>
+#include <vm/vm_page.h>
+#include <vm/vm_map.h>
+#include <vm/vm_object.h>
+#include <vm/vm_kern.h>
+#include <vm/vm_extern.h>
+#include <vm/uma_int.h>
+
+#include <sys/queue.h>
+
 /* Constants */
 #define KBUFSIZE 0x100
 #define MAX_DVKM_ZONES 0x10
@@ -77,7 +89,7 @@ struct dvkm_io {
 
     /* Heap use after free specific */
     int kheap_operation; // eg. KHEAP_MALLOC
-    int kheap_addr;      // consumed by free
+    void *kheap_addr;    // consumed by free
 
     /* Stack use after free specific */
     
@@ -86,7 +98,7 @@ struct dvkm_io {
     int increment;      // how much to increment (can be negative)
 
     /* Double fetch specific */
-    
+
 };
 
 struct buffer_overflow_obj {
@@ -102,8 +114,10 @@ struct uaf_obj {
 };
 
 // allocate up to 0x10 zones of different size
-uma_zone_t dvkm_zones[MAX_DVKM_ZONES];
-size_t dvkm_zones_count;
+extern uma_zone_t dvkm_zones[MAX_DVKM_ZONES];
+extern size_t dvkm_zones_count;
+
+MALLOC_DECLARE(M_DVKM);
 
 /* Function prototypes */
 int buffer_overflow_stack_ioctl_handler(struct dvkm_io *io, int bo_subobject);

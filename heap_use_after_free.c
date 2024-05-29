@@ -35,9 +35,9 @@
 
 int uaf_heap_ioctl_handler(struct dvkm_io *io)
 {
-    int error;
+    int error = 0;
     int kheap_operation;
-    void *ubuf, kheap_addr, addr;
+    void *ubuf, *kheap_addr, *addr;
     size_t alloc_size, ubufsize;
 
     kheap_operation = io->kheap_operation;
@@ -70,9 +70,9 @@ int uaf_heap_ioctl_handler(struct dvkm_io *io)
 
 int uaf_uma_ioctl_handler(struct dvkm_io *io)
 {
-    int error;
+    int error = 0;
     int kheap_operation;
-    void *ubuf, kheap_addr, addr;
+    void *ubuf, *kheap_addr, *addr;
     uma_zone_t dvkm_zone = NULL;
     size_t dvkm_zone_idx, ubufsize, alloc_size;
     char zone_name[ZONE_NAME_MAXLEN + 1];

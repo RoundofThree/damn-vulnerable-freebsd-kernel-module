@@ -60,7 +60,7 @@ buffer_overflow_stack_subobject(void *ubuf, size_t ubufsize, int preserve_cheri_
     struct buffer_overflow_obj bo_obj;
     int error;
 
-    bo_obj.bo_buf;  // uninitialized
+    // bo_obj.bo_buf;  // uninitialized
     bo_obj.bo_td = curthread;
 
     if (is_disclosure) {
@@ -260,7 +260,7 @@ buffer_overflow_uma_ioctl_handler(struct dvkm_io *io, int bo_subobject)
     if (bo_subobject) {
         // hardcoded dvkm_zone
         dvkm_zone = dvkm_zones[0];
-        error = buffer_overflow_uma_subobject(ubuf, ubufsize, dvkm_zone, preserve_cheri_caps);
+        error = buffer_overflow_uma_subobject(ubuf, ubufsize, dvkm_zone, preserve_cheri_caps, is_disclosure);
     } else {
         error = copyinstr(io->zone_name, zone_name, ZONE_NAME_MAXLEN + 1, NULL);
         if (error) {
@@ -280,7 +280,7 @@ buffer_overflow_uma_ioctl_handler(struct dvkm_io *io, int bo_subobject)
         } else {
             return (EBUSY);
         }
-        error = buffer_overflow_uma(ubuf, ubufsize, dvkm_zone, preserve_cheri_caps);
+        error = buffer_overflow_uma(ubuf, ubufsize, dvkm_zone, preserve_cheri_caps, is_disclosure);
     }
 
     return (error);

@@ -53,8 +53,7 @@ func1(void **out)
 int uaf_stack_ioctl_handler(struct dvkm_io *io)
 {
     int error;
-    void **objp;
-    void *obj, ubuf;
+    void *obj, *ubuf;
     size_t ubufsize;
 
     ubuf = io->output_buffer;
@@ -64,8 +63,7 @@ int uaf_stack_ioctl_handler(struct dvkm_io *io)
         return (EINVAL);
     }
 
-    func1(objp);
-    obj = *objp;
+    func1(&obj);
 
     error = copyoutcap(obj, ubuf, ubufsize);
 

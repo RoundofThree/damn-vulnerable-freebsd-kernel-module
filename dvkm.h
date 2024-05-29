@@ -53,10 +53,6 @@
 
 #endif /* DVKM_IOCTL */
 
-MALLOC_DECLARE(M_DVKM);
-MALLOC_DEFINE(M_DVKM, "dvkmbuf", "DVKM general heap buffer");
-
-
 /* Function prototypes */
 static d_open_t      dvkm_open;
 static d_close_t     dvkm_close;

@@ -35,7 +35,7 @@
 int arbitrary_read_ioctl_handler(struct dvkm_io *io)
 {
     int error, preserve_cheri_caps;
-    void *target_addr, ubuf;
+    void *target_addr, *ubuf;
     size_t ubufsize;
 
     target_addr = io->target_addr;
@@ -52,10 +52,10 @@ int arbitrary_read_ioctl_handler(struct dvkm_io *io)
     return (error);
 }
 
-int arbitrary_write_ioctl_handler(struct dvkm_io *io);
+int arbitrary_write_ioctl_handler(struct dvkm_io *io)
 {
     int error, preserve_cheri_caps;
-    void *target_addr, ubuf;
+    void *target_addr, *ubuf;
     size_t ubufsize;
 
     target_addr = io->target_addr;
@@ -83,9 +83,9 @@ int arbitrary_increment_ioctl_handler(struct dvkm_io *io)
     increment = io->increment;
 
     if (preserve_cheri_caps) {
-        *(uintptr_t *)target_addr += 1;
+        *(uintptr_t *)target_addr += increment;
     } else {
-        *(char *)target_addr += 1;
+        *(char *)target_addr += increment;
     }
 
     return (error);

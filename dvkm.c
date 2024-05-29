@@ -45,6 +45,11 @@ static struct cdevsw dvkm_cdevsw = {
 
 static struct cdev *dvkm_cdev;
 
+MALLOC_DEFINE(M_DVKM, "dvkmbuf", "DVKM general heap buffer");
+
+uma_zone_t dvkm_zones[MAX_DVKM_ZONES];
+size_t dvkm_zones_count;
+
 static int
 dvkm_open(struct cdev *dev, int oflags, int devtype, struct thread *td)
 {
