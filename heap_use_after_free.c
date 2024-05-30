@@ -53,7 +53,7 @@ int uaf_heap_ioctl_handler(struct dvkm_io *io)
                 return (EINVAL);
             }
             addr = malloc(alloc_size, M_DVKM, M_WAITOK);
-            error = copyoutcap(&addr, ubuf, sizeof(uintptr_t));
+            error = copyoutcap(&addr, (__cheri_tocap void * __capability)ubuf, sizeof(uintptr_t));
             break;
         case KHEAP_FREE:
             free(kheap_addr, M_DVKM);
@@ -83,7 +83,7 @@ int uaf_uma_ioctl_handler(struct dvkm_io *io)
     ubufsize = io->output_buffer_size;
     alloc_size = io->alloc_size;
 
-    error = copyinstr(io->zone_name, zone_name, ZONE_NAME_MAXLEN + 1, NULL);
+    error = copyinstr((__cheri_tocap void * __capability)io->zone_name, zone_name, ZONE_NAME_MAXLEN + 1, NULL);
     if (error) {
         return (error);
     }
@@ -111,7 +111,7 @@ int uaf_uma_ioctl_handler(struct dvkm_io *io)
                 return (EBUSY);
             }
             addr = uma_zalloc(dvkm_zone, M_WAITOK);
-            error = copyoutcap(&addr, ubuf, sizeof(uintptr_t));
+            error = copyoutcap(&addr, (__cheri_tocap void * __capability)ubuf, sizeof(uintptr_t));
             break;
         case KHEAP_FREE:
             if (dvkm_zone == NULL) {

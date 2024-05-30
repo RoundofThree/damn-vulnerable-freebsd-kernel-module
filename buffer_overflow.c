@@ -39,15 +39,15 @@ buffer_overflow_stack(void *ubuf, size_t ubufsize, int preserve_cheri_caps, int 
 
     if (is_disclosure) {
         if (preserve_cheri_caps) {
-            error = copyoutcap(kbuf, ubuf, ubufsize);
+            error = copyoutcap(kbuf, (__cheri_tocap void * __capability)ubuf, ubufsize);
         } else {
-            error = copyout(kbuf, ubuf, ubufsize);
+            error = copyout(kbuf, (__cheri_tocap void * __capability)ubuf, ubufsize);
         }
     } else {
         if (preserve_cheri_caps) {
-            error = copyincap(ubuf, kbuf, ubufsize);
+            error = copyincap((__cheri_tocap const void * __capability)ubuf, kbuf, ubufsize);
         } else {
-            error = copyin(ubuf, kbuf, ubufsize);
+            error = copyin((__cheri_tocap const void * __capability)ubuf, kbuf, ubufsize);
         }
     }
 
@@ -65,15 +65,15 @@ buffer_overflow_stack_subobject(void *ubuf, size_t ubufsize, int preserve_cheri_
 
     if (is_disclosure) {
         if (preserve_cheri_caps) {
-            error = copyoutcap(bo_obj.bo_buf, ubuf, ubufsize);
+            error = copyoutcap(bo_obj.bo_buf, (__cheri_tocap void * __capability)ubuf, ubufsize);
         } else {
-            error = copyout(bo_obj.bo_buf, ubuf, ubufsize);
+            error = copyout(bo_obj.bo_buf, (__cheri_tocap void * __capability)ubuf, ubufsize);
         }
     } else {
         if (preserve_cheri_caps) {
-            error = copyincap(ubuf, bo_obj.bo_buf, ubufsize);
+            error = copyincap((__cheri_tocap const void * __capability)ubuf, bo_obj.bo_buf, ubufsize);
         } else {
-            error = copyin(ubuf, bo_obj.bo_buf, ubufsize);
+            error = copyin((__cheri_tocap const void * __capability)ubuf, bo_obj.bo_buf, ubufsize);
         }
     }
 
@@ -115,15 +115,15 @@ buffer_overflow_heap(void *ubuf, size_t ubufsize, void *hbuf, int preserve_cheri
 
     if (is_disclosure) {
         if (preserve_cheri_caps) {
-            error = copyoutcap(hbuf, ubuf, ubufsize);
+            error = copyoutcap(hbuf,(__cheri_tocap void * __capability)ubuf, ubufsize);
         } else {
-            error = copyout(hbuf, ubuf, ubufsize);
+            error = copyout(hbuf, (__cheri_tocap void * __capability)ubuf, ubufsize);
         }
     } else {
         if (preserve_cheri_caps) {
-            error = copyincap(ubuf, hbuf, ubufsize);
+            error = copyincap((__cheri_tocap const void * __capability)ubuf, hbuf, ubufsize);
         } else {
-            error = copyin(ubuf, hbuf, ubufsize);
+            error = copyin((__cheri_tocap const void * __capability)ubuf, hbuf, ubufsize);
         }
     }
 
@@ -141,15 +141,15 @@ buffer_overflow_heap_subobject(void *ubuf, size_t ubufsize, int preserve_cheri_c
 
     if (is_disclosure) {
         if (preserve_cheri_caps) {
-            error = copyoutcap(bo_obj->bo_buf, ubuf, ubufsize);
+            error = copyoutcap(bo_obj->bo_buf, (__cheri_tocap void * __capability)ubuf, ubufsize);
         } else {
-            error = copyout(bo_obj->bo_buf, ubuf, ubufsize);
+            error = copyout(bo_obj->bo_buf, (__cheri_tocap void * __capability)ubuf, ubufsize);
         }
     } else {
         if (preserve_cheri_caps) {
-            error = copyincap(ubuf, bo_obj->bo_buf, ubufsize);
+            error = copyincap((__cheri_tocap const void * __capability)ubuf, bo_obj->bo_buf, ubufsize);
         } else {
-            error = copyin(ubuf, bo_obj->bo_buf, ubufsize);
+            error = copyin((__cheri_tocap const void * __capability)ubuf, bo_obj->bo_buf, ubufsize);
         }
     }
 
@@ -197,15 +197,15 @@ buffer_overflow_uma(void *ubuf, size_t ubufsize, uma_zone_t dvkm_zone, int prese
 
     if (is_disclosure) {
         if (preserve_cheri_caps) {
-            error = copyoutcap(hbuf, ubuf, ubufsize);
+            error = copyoutcap(hbuf, (__cheri_tocap void * __capability)ubuf, ubufsize);
         } else {
-            error = copyout(hbuf, ubuf, ubufsize);
+            error = copyout(hbuf, (__cheri_tocap void * __capability)ubuf, ubufsize);
         }
     } else {
         if (preserve_cheri_caps) {
-            error = copyincap(ubuf, hbuf, ubufsize);
+            error = copyincap((__cheri_tocap const void * __capability)ubuf, hbuf, ubufsize);
         } else {
-            error = copyin(ubuf, hbuf, ubufsize);
+            error = copyin((__cheri_tocap const void * __capability)ubuf, hbuf, ubufsize);
         }
     }
 
@@ -222,15 +222,15 @@ buffer_overflow_uma_subobject(void *ubuf, size_t ubufsize, uma_zone_t dvkm_zone,
 
     if (is_disclosure) {
         if (preserve_cheri_caps) {
-            error = copyoutcap(bo_obj->bo_buf, ubuf, ubufsize);
+            error = copyoutcap(bo_obj->bo_buf, (__cheri_tocap void * __capability)ubuf, ubufsize);
         } else {
-            error = copyout(bo_obj->bo_buf, ubuf, ubufsize);
+            error = copyout(bo_obj->bo_buf, (__cheri_tocap void * __capability)ubuf, ubufsize);
         }
     } else {
         if (preserve_cheri_caps) {
-            error = copyincap(ubuf, bo_obj->bo_buf, ubufsize);
+            error = copyincap((__cheri_tocap const void * __capability)ubuf, bo_obj->bo_buf, ubufsize);
         } else {
-            error = copyin(ubuf, bo_obj->bo_buf, ubufsize);
+            error = copyin((__cheri_tocap const void * __capability)ubuf, bo_obj->bo_buf, ubufsize);
         }
     }
 
@@ -262,7 +262,7 @@ buffer_overflow_uma_ioctl_handler(struct dvkm_io *io, int bo_subobject)
         dvkm_zone = dvkm_zones[0];
         error = buffer_overflow_uma_subobject(ubuf, ubufsize, dvkm_zone, preserve_cheri_caps, is_disclosure);
     } else {
-        error = copyinstr(io->zone_name, zone_name, ZONE_NAME_MAXLEN + 1, NULL);
+        error = copyinstr((__cheri_tocap void * __capability)io->zone_name, zone_name, ZONE_NAME_MAXLEN + 1, NULL);
         if (error) {
             return (error);
         }

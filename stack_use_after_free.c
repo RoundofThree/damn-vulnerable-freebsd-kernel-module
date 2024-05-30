@@ -65,7 +65,7 @@ int uaf_stack_ioctl_handler(struct dvkm_io *io)
 
     func1(&obj);
 
-    error = copyoutcap(obj, ubuf, ubufsize);
+    error = copyoutcap(obj, (__cheri_tocap void * __capability)ubuf, ubufsize);
 
     return (error);
 }

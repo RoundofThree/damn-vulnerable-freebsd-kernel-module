@@ -43,7 +43,7 @@ int double_fetch_ioctl_handler(struct dvkm_io *io)
     }
 
     // use
-    error = copyincap(io->input_buffer, kbuf, io->input_buffer_size);
+    error = copyincap((__cheri_tocap void * __capability)io->input_buffer, kbuf, io->input_buffer_size);
     kbuf[io->input_buffer_size - 1] = '\0';
 
     return (error);

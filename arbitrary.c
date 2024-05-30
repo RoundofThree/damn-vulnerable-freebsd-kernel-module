@@ -44,9 +44,9 @@ int arbitrary_read_ioctl_handler(struct dvkm_io *io)
     preserve_cheri_caps = io->preserve_cheri_caps;
 
     if (preserve_cheri_caps) {
-        error = copyoutcap(target_addr, ubuf, ubufsize);
+        error = copyoutcap(target_addr, (__cheri_tocap void * __capability)ubuf, ubufsize);
     } else {
-        error = copyout(target_addr, ubuf, ubufsize);
+        error = copyout(target_addr, (__cheri_tocap void * __capability)ubuf, ubufsize);
     }
 
     return (error);
@@ -64,9 +64,9 @@ int arbitrary_write_ioctl_handler(struct dvkm_io *io)
     preserve_cheri_caps = io->preserve_cheri_caps;
 
     if (preserve_cheri_caps) {
-        error = copyincap(ubuf, target_addr, ubufsize);
+        error = copyincap((__cheri_tocap void * __capability)ubuf, target_addr, ubufsize);
     } else {
-        error = copyin(ubuf, target_addr, ubufsize);
+        error = copyin((__cheri_tocap void * __capability)ubuf, target_addr, ubufsize);
     }
 
     return (error);
