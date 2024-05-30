@@ -31,32 +31,41 @@
 
 #include "utils.h"
 
-/* Constants */
+extern int has_pan;
 
-#ifndef DVKM_IOCTL
+// PAN = SMAP
+static void
+disable_pan(void)
+{
+    uintptr_t has_pan_addr;
 
-#define DKM_IOCTL ('I')
-#define DVKM_IOCTL_BUFFER_OVERFLOW_STACK _IOWR(DKM_IOCTL, 1, struct dvkm_io)
-#define DVKM_IOCTL_BUFFER_OVERFLOW_STACK_SUBOBJECT _IOWR(DKM_IOCTL, 2, struct dvkm_io)
-#define DVKM_IOCTL_BUFFER_OVERFLOW_HEAP _IOWR(DKM_IOCTL, 3, struct dvkm_io)
-#define DVKM_IOCTL_BUFFER_OVERFLOW_HEAP_SUBOBJECT _IOWR(DKM_IOCTL, 4, struct dvkm_io)
-#define DVKM_IOCTL_BUFFER_OVERFLOW_HEAP_UMA _IOWR(DKM_IOCTL, 5, struct dvkm_io)
-#define DVKM_IOCTL_BUFFER_OVERFLOW_HEAP_UMA_SUBOBJECT _IOWR(DKM_IOCTL, 6, struct dvkm_io)
-#define DVKM_IOCTL_UAF_HEAP _IOWR(DKM_IOCTL, 7, struct dvkm_io)
-#define DVKM_IOCTL_UAF_HEAP_UMA _IOWR(DKM_IOCTL, 8, struct dvkm_io)
-#define DVKM_IOCTL_UAF_STACK _IOWR(DKM_IOCTL, 9, struct dvkm_io)
-#define DVKM_IOCTL_ARBITRARY_READ _IOWR(DKM_IOCTL, 10, struct dvkm_io)
-#define DVKM_IOCTL_ARBITRARY_WRITE _IOWR(DKM_IOCTL, 11, struct dvkm_io)
-#define DVKM_IOCTL_ARBITRARY_INCREMENT _IOWR(DKM_IOCTL, 12, struct dvkm_io)
-#define DVKM_IOCTL_DOUBLE_FETCH _IOWR(DKM_IOCTL, 13, struct dvkm_io)
-#define DVKM_IOCTL_DISABLE_SECURITY _IOWR(DKM_IOCTL, 14, struct dvkm_io)
-// TODO: pointer hijack
+    // get has_pan address
+    asm volatile (
+        "ldr %0, =has_pan\n"
+        : "=r" (has_pan_addr)
+    );
 
-#endif /* DVKM_IOCTL */
+    // set has_pan to 0
+    asm volatile (
+        "str xzr, [%0]\n"
+        : 
+        : "r" (has_pan_addr)
+    );
 
-/* Function prototypes */
-static d_open_t      dvkm_open;
-static d_close_t     dvkm_close;
-static d_read_t      dvkm_read;
-static d_write_t     dvkm_write;
-static d_ioctl_t     dvkm_ioctl;
+    // msr pan, #0
+    asm volatile (".inst 0xd500409f | (0 << 8)\n");
+}
+
+int
+disable_security_mitigation_handler(struct dvkm_io *io)
+{
+    int error = 0;
+    int security_mitigation_mask = io->security_mitigation_mask;
+
+    // this is not correct but we only have one option now
+    if ((security_mitigation_mask & DVKM_DISABLE_PAN) != 0) {
+        disable_pan();
+    }
+    
+    return (error);
+}

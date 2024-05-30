@@ -4,7 +4,8 @@ SRCS=   dvkm.h utils.h dvkm.c \
 	heap_use_after_free.c \
 	stack_use_after_free.c \
 	arbitrary.c \
-	double_fetch.c
+	double_fetch.c \
+	disable_mitigations.c
 
 .OBJDIR: ${.CURDIR}/obj
 

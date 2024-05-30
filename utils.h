@@ -60,6 +60,9 @@
 #define KHEAP_MALLOC 1
 #define KHEAP_FREE 2
 
+/* Security mitigations mask bits */
+#define DVKM_DISABLE_PAN 1
+
 /* Structs */
 struct dvkm_io {
     /* General I/O fields */
@@ -99,6 +102,8 @@ struct dvkm_io {
 
     /* Double fetch specific */
 
+    /* Disable/enable security mitigations */
+    int security_mitigation_mask;
 };
 
 struct buffer_overflow_obj {
@@ -130,3 +135,4 @@ int arbitrary_read_ioctl_handler(struct dvkm_io *io);
 int arbitrary_write_ioctl_handler(struct dvkm_io *io);
 int arbitrary_increment_ioctl_handler(struct dvkm_io *io);
 int double_fetch_ioctl_handler(struct dvkm_io *io);
+int disable_security_mitigation_handler(struct dvkm_io *io);

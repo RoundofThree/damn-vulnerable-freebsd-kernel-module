@@ -160,6 +160,10 @@ dvkm_ioctl(struct cdev *dev, u_long cmd, caddr_t arg, int flags,
         error = double_fetch_ioctl_handler(io);
         uprintf("[+] Finished processing double fetch ioctl request\n");
         break;
+    case DVKM_IOCTL_DISABLE_SECURITY:
+        uprintf("[+] Starting to process disable security mitigation request\n");
+        error = disable_security_mitigation_handler(io);
+        uprintf("[+] Finished processing disable security mitigation request\n");
     default:
         error = ENOTTY;
         break;
