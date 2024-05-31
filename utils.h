@@ -51,6 +51,21 @@
 
 #include <sys/queue.h>
 
+// make the compiler happy for FreeBSD
+#if !__has_feature(capabilities)
+
+#define __cheri_tocap
+#define __cheri_fromcap
+#define __cheri_offset
+#define __cheri_addr
+
+#define	copyoutcap	copyout
+#define copyincap   copyin
+
+#define	__capability
+
+#endif
+
 /* Constants */
 #define KBUFSIZE 0x100
 #define MAX_DVKM_ZONES 0x10

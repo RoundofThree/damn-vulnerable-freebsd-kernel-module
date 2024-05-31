@@ -34,7 +34,7 @@ This is a work-in-progress research prototype. Analysis in another repository.
 - Arbitrary memory disclosure (read)
 - Arbitrary overwrite (write)
 - Arbitrary integer/pointer increment
-- Pointer hijack <!-- I use it to test ret2dir in CheriBSD -->
+- Pointer hijack (TODO) <!-- I use it to test ret2dir in CheriBSD -->
 - Uninitialized memory (read/write)
     - Stack
     - Heap
@@ -42,7 +42,7 @@ This is a work-in-progress research prototype. Analysis in another repository.
 
 ## Build instructions
 
-In a FreeBSD host, (now it's broken)
+In a FreeBSD host,
 ```sh
 make
 ```
