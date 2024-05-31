@@ -33,27 +33,30 @@
 
 extern int has_pan;
 
-// PAN = SMAP
 static void
 disable_pan(void)
 {
-    uintptr_t has_pan_addr;
+    // XXXR3: naive me, this breaks
+    // has_pan = 0;
 
-    // get has_pan address
-    asm volatile (
-        "ldr %0, =has_pan\n"
-        : "=r" (has_pan_addr)
-    );
+    // uintptr_t has_pan_addr;
+    // // get has_pan address
+    // asm volatile (
+    //     "ldr %0, =has_pan\n"
+    //     : "=r" (has_pan_addr)
+    // );
 
-    // set has_pan to 0
-    asm volatile (
-        "str xzr, [%0]\n"
-        : 
-        : "r" (has_pan_addr)
-    );
+    // // set has_pan to 0
+    // asm volatile (
+    //     "str xzr, [%0]\n"
+    //     : 
+    //     : "r" (has_pan_addr)
+    // );
 
+    // this will be restored if has_pan is set
     // msr pan, #0
-    asm volatile (".inst 0xd500409f | (0 << 8)\n");
+    // __asm __volatile (".inst 0xd500409f | (0 << 8)\n");
+    return;
 }
 
 int
