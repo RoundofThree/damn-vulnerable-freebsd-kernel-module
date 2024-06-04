@@ -88,11 +88,14 @@ static int
 dvkm_ioctl(struct cdev *dev, u_long cmd, caddr_t arg, int flags,
     struct thread *td)
 {
-    struct dvkm_io *io;
+    struct dvkm_io *io, *uio;
     int error;
 
-    io = (void *)arg;
-    error = 0;
+    uio = (dvkm_io *)arg;
+    error = copyin(uio, io, sizeof(struct dvkm_io));
+    if (error) {
+        return (error);
+    }
 
     switch (cmd) {
     case DVKM_IOCTL_BUFFER_OVERFLOW_STACK:
@@ -164,6 +167,10 @@ dvkm_ioctl(struct cdev *dev, u_long cmd, caddr_t arg, int flags,
         uprintf("[+] Starting to process disable security mitigation request\n");
         error = disable_security_mitigation_handler(io);
         uprintf("[+] Finished processing disable security mitigation request\n");
+    case DVKM_IOCTL_READ_PMAP_L0:
+        uprintf("[+] Starting to process read PMAP L0 request\n");
+        error = read_l0(io);
+        uprintf("[+] Finished processing read PMAP L0 request\n");
     default:
         error = ENOTTY;
         break;

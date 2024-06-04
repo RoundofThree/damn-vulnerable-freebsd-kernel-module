@@ -50,6 +50,8 @@
 #define DVKM_IOCTL_ARBITRARY_INCREMENT _IOWR(DKM_IOCTL, 12, struct dvkm_io)
 #define DVKM_IOCTL_DOUBLE_FETCH _IOWR(DKM_IOCTL, 13, struct dvkm_io)
 #define DVKM_IOCTL_DISABLE_SECURITY _IOWR(DKM_IOCTL, 14, struct dvkm_io)
+#define DVKM_IOCTL_READ_PMAP_L0 _IOWR(DKM_IOCTL, 15, struct dvkm_io)
+
 // TODO: pointer hijack
 
 #endif /* DVKM_IOCTL */

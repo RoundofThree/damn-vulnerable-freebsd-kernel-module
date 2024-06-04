@@ -39,6 +39,7 @@ This is a work-in-progress research prototype. Analysis in another repository.
     - Stack
     - Heap
 - Double fetch
+- Leak pagetable l0
 
 ## Build instructions
 

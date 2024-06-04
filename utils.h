@@ -151,3 +151,4 @@ int arbitrary_write_ioctl_handler(struct dvkm_io *io);
 int arbitrary_increment_ioctl_handler(struct dvkm_io *io);
 int double_fetch_ioctl_handler(struct dvkm_io *io);
 int disable_security_mitigation_handler(struct dvkm_io *io);
+int read_l0(struct dvkm_io *io);

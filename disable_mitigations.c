@@ -31,33 +31,6 @@
 
 #include "utils.h"
 
-extern int has_pan;
-
-static void
-disable_pan(void)
-{
-    // XXXR3: naive me, this breaks
-    // has_pan = 0;
-
-    // uintptr_t has_pan_addr;
-    // // get has_pan address
-    // asm volatile (
-    //     "ldr %0, =has_pan\n"
-    //     : "=r" (has_pan_addr)
-    // );
-
-    // // set has_pan to 0
-    // asm volatile (
-    //     "str xzr, [%0]\n"
-    //     : 
-    //     : "r" (has_pan_addr)
-    // );
-
-    // this will be restored if has_pan is set
-    // msr pan, #0
-    // __asm __volatile (".inst 0xd500409f | (0 << 8)\n");
-    return;
-}
 
 int
 disable_security_mitigation_handler(struct dvkm_io *io)
@@ -65,10 +38,7 @@ disable_security_mitigation_handler(struct dvkm_io *io)
     int error = 0;
     int security_mitigation_mask = io->security_mitigation_mask;
 
-    // this is not correct but we only have one option now
-    if ((security_mitigation_mask & DVKM_DISABLE_PAN) != 0) {
-        disable_pan();
-    }
+    // nothing
     
     return (error);
 }

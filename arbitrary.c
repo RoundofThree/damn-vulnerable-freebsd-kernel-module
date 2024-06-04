@@ -90,3 +90,20 @@ int arbitrary_increment_ioctl_handler(struct dvkm_io *io)
 
     return (error);
 }
+
+int read_l0(struct dvkm_io *io)
+{
+    int error = 0;
+    void *ubuf;
+    size_t ubufsize;
+    void *l0;
+
+    ubuf = io->input_buffer;
+    ubufsize = io->input_buffer_size;
+
+    l0 = curproc->p_vmspace->vm_pmap->pm_l0;
+
+    error = copyoutcap(&l0, ubuf, ubufsize);
+    
+    return (error);
+}
