@@ -37,7 +37,9 @@ int uaf_heap_ioctl_handler(struct dvkm_io *io)
 {
     int error = 0;
     int kheap_operation;
-    void *ubuf, *kheap_addr, *addr;
+    void * __capability ubuf, *addr;
+    uint64_t kheap_addr;
+    void *kheap_ptr;
     size_t alloc_size, ubufsize;
 
     kheap_operation = io->kheap_operation;
@@ -53,10 +55,17 @@ int uaf_heap_ioctl_handler(struct dvkm_io *io)
                 return (EINVAL);
             }
             addr = malloc(alloc_size, M_DVKM, M_WAITOK);
-            error = copyoutcap(&addr, (__cheri_tocap void * __capability)ubuf, sizeof(uintptr_t));
+            error = copyoutcap(&addr, ubuf, sizeof(uintptr_t));
             break;
         case KHEAP_FREE:
-            free(kheap_addr, M_DVKM);
+            // forge kernelspace cap if purecap kernel
+#ifdef __CHERI_PURE_CAPABILITY__
+            kheap_ptr = cheri_setaddress(kernel_root_cap, kheap_addr);
+#else
+            kheap_ptr = (void *)kheap_addr;
+#endif
+            // TODO: setbounds and andperm
+            free(kheap_ptr, M_DVKM);
             break;
         default:
             error = EOPNOTSUPP;
@@ -72,7 +81,9 @@ int uaf_uma_ioctl_handler(struct dvkm_io *io)
 {
     int error = 0;
     int kheap_operation;
-    void *ubuf, *kheap_addr, *addr;
+    void * __capability ubuf, *addr;
+    uint64_t kheap_addr;
+    void *kheap_ptr;
     uma_zone_t dvkm_zone = NULL;
     size_t dvkm_zone_idx, ubufsize, alloc_size;
     char zone_name[ZONE_NAME_MAXLEN + 1];
@@ -83,7 +94,7 @@ int uaf_uma_ioctl_handler(struct dvkm_io *io)
     ubufsize = io->output_buffer_size;
     alloc_size = io->alloc_size;
 
-    error = copyinstr((__cheri_tocap void * __capability)io->zone_name, zone_name, ZONE_NAME_MAXLEN + 1, NULL);
+    error = copyinstr(io->zone_name, zone_name, ZONE_NAME_MAXLEN + 1, NULL);
     if (error) {
         return (error);
     }
@@ -111,13 +122,18 @@ int uaf_uma_ioctl_handler(struct dvkm_io *io)
                 return (EBUSY);
             }
             addr = uma_zalloc(dvkm_zone, M_WAITOK);
-            error = copyoutcap(&addr, (__cheri_tocap void * __capability)ubuf, sizeof(uintptr_t));
+            error = copyoutcap(&addr, ubuf, sizeof(uintptr_t));
             break;
         case KHEAP_FREE:
             if (dvkm_zone == NULL) {
                 return (EINVAL);
             }
-            uma_zfree(dvkm_zone, kheap_addr);
+#ifdef __CHERI_PURE_CAPABILITY__
+            kheap_ptr = cheri_setaddress(kernel_root_cap, kheap_addr);
+#else
+            kheap_ptr = (void *)kheap_addr;
+#endif
+            uma_zfree(dvkm_zone, kheap_ptr);
             break;
         default:
             error = EOPNOTSUPP;

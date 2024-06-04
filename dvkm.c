@@ -85,96 +85,134 @@ dvkm_write(struct cdev *dev, struct uio *uio, int ioflag)
 }
 
 static int
-dvkm_ioctl(struct cdev *dev, u_long cmd, caddr_t arg, int flags,
+dvkm_ioctl(struct cdev *dev, unsigned long cmd, caddr_t arg, int flags,
     struct thread *td)
 {
-    struct dvkm_io *io, *uio;
+    struct dvkm_io *io;
     int error;
 
-    uio = (struct dvkm_io *)arg;
-    io = malloc(sizeof(struct dvkm_io), M_TEMP, M_WAITOK);
-    error = copyin((__cheri_tocap void * __capability)uio, io, sizeof(struct dvkm_io));
-    if (error) {
-        return (error);
+    io = (struct dvkm_io *)arg;
+
+#ifdef DEBUG
+    uprintf("[DEBUG] cmd = %lx\n", cmd);
+    uprintf("[DEBUG] DVKM_IOCTL_READ_PMAP_TOP = %lx\n", DVKM_IOCTL_READ_PMAP_TOP);
+
+    if (cmd == DVKM_IOCTL_READ_PMAP_TOP) {
+        uprintf("[DEBUG] I m in!\n");
     }
+#endif
 
     switch (cmd) {
-    case DVKM_IOCTL_BUFFER_OVERFLOW_STACK:
-        uprintf("[+] Starting to process buffer overflow stack ioctl request\n");
-        error = buffer_overflow_stack_ioctl_handler(io, 0);
-        uprintf("[+] Finished processing buffer overflow stack ioctl request\n");
-        break;
-    case DVKM_IOCTL_BUFFER_OVERFLOW_STACK_SUBOBJECT:
-        uprintf("[+] Starting to process buffer overflow stack subobject ioctl request\n");
-        error = buffer_overflow_stack_ioctl_handler(io, 1);
-        uprintf("[+] Finished processing buffer overflow stack subobject ioctl request\n");
-        break;
-    case DVKM_IOCTL_BUFFER_OVERFLOW_HEAP:
-        uprintf("[+] Starting to process buffer overflow heap ioctl request\n");
-        error = buffer_overflow_heap_ioctl_handler(io, 0);
-        uprintf("[+] Finished processing buffer overflow heap ioctl request\n");
-        break;
-    case DVKM_IOCTL_BUFFER_OVERFLOW_HEAP_SUBOBJECT:
-        uprintf("[+] Starting to process buffer overflow heap subobject ioctl request\n");
-        error = buffer_overflow_heap_ioctl_handler(io, 1);
-        uprintf("[+] Finished processing buffer overflow heap subobject ioctl request\n");
-        break;
-    case DVKM_IOCTL_BUFFER_OVERFLOW_HEAP_UMA:
-        uprintf("[+] Starting to process buffer overflow in UMA zone ioctl request\n");
-        error = buffer_overflow_uma_ioctl_handler(io, 0);
-        uprintf("[+] Finished processing buffer overflow in UMA zone ioctl request\n");
-        break;
-    case DVKM_IOCTL_BUFFER_OVERFLOW_HEAP_UMA_SUBOBJECT:
-        uprintf("[+] Starting to process buffer overflow in UMA zone subobject ioctl request\n");
-        error = buffer_overflow_uma_ioctl_handler(io, 1);
-        uprintf("[+] Finished processing buffer overflow in UMA zone subobject ioctl request\n");
-        break;
-    case DVKM_IOCTL_UAF_HEAP:
-        uprintf("[+] Starting to process heap UAF ioctl request\n");
-        error = uaf_heap_ioctl_handler(io);
-        uprintf("[+] Finished processing heap UAF ioctl request\n");
-        break;
-    case DVKM_IOCTL_UAF_HEAP_UMA:
-        uprintf("[+] Starting to process UMA zone UAF ioctl request\n");
-        error = uaf_uma_ioctl_handler(io);
-        uprintf("[+] Finished processing UMA zone UAF ioctl request\n");
-        break;
-    case DVKM_IOCTL_UAF_STACK:
-        uprintf("[+] Starting to process stack UAF ioctl request\n");
-        error = uaf_stack_ioctl_handler(io);
-        uprintf("[+] Finished processing stack UAF ioctl request\n");
-        break;
-    case DVKM_IOCTL_ARBITRARY_READ:
-        uprintf("[+] Starting to process arbitrary read ioctl request\n");
-        error = arbitrary_read_ioctl_handler(io);
-        uprintf("[+] Finished processing arbitrary read ioctl request\n");
-        break;
-    case DVKM_IOCTL_ARBITRARY_WRITE:
-        uprintf("[+] Starting to process arbitrary write ioctl request\n");
-        error = arbitrary_write_ioctl_handler(io);
-        uprintf("[+] Finished processing arbitrary write ioctl request\n");
-        break;
-    case DVKM_IOCTL_ARBITRARY_INCREMENT:
-        uprintf("[+] Starting to process arbitrary increment ioctl request\n");
-        error = arbitrary_increment_ioctl_handler(io);
-        uprintf("[+] Finished processing arbitrary increment ioctl request\n");
-        break;
-    case DVKM_IOCTL_DOUBLE_FETCH:
-        uprintf("[+] Starting to process double fetch ioctl request\n");
-        error = double_fetch_ioctl_handler(io);
-        uprintf("[+] Finished processing double fetch ioctl request\n");
-        break;
-    case DVKM_IOCTL_DISABLE_SECURITY:
-        uprintf("[+] Starting to process disable security mitigation request\n");
-        error = disable_security_mitigation_handler(io);
-        uprintf("[+] Finished processing disable security mitigation request\n");
-    case DVKM_IOCTL_READ_PMAP_L0:
-        uprintf("[+] Starting to process read PMAP L0 request\n");
-        error = read_l0(io);
-        uprintf("[+] Finished processing read PMAP L0 request\n");
-    default:
-        error = ENOTTY;
-        break;
+        case DVKM_IOCTL_BUFFER_OVERFLOW_STACK:
+        {
+            uprintf("[+] Starting to process buffer overflow stack ioctl request\n");
+            error = buffer_overflow_stack_ioctl_handler(io, 0);
+            uprintf("[+] Finished processing buffer overflow stack ioctl request\n");
+            break;
+        }
+        case DVKM_IOCTL_BUFFER_OVERFLOW_STACK_SUBOBJECT:
+        {
+            uprintf("[+] Starting to process buffer overflow stack subobject ioctl request\n");
+            error = buffer_overflow_stack_ioctl_handler(io, 1);
+            uprintf("[+] Finished processing buffer overflow stack subobject ioctl request\n");
+            break;
+        }
+        case DVKM_IOCTL_BUFFER_OVERFLOW_HEAP:
+        {
+            uprintf("[+] Starting to process buffer overflow heap ioctl request\n");
+            error = buffer_overflow_heap_ioctl_handler(io, 0);
+            uprintf("[+] Finished processing buffer overflow heap ioctl request\n");
+            break;
+        }
+        case DVKM_IOCTL_BUFFER_OVERFLOW_HEAP_SUBOBJECT:
+        {
+            uprintf("[+] Starting to process buffer overflow heap subobject ioctl request\n");
+            error = buffer_overflow_heap_ioctl_handler(io, 1);
+            uprintf("[+] Finished processing buffer overflow heap subobject ioctl request\n");
+            break;
+        }
+        case DVKM_IOCTL_BUFFER_OVERFLOW_HEAP_UMA:
+        {
+            uprintf("[+] Starting to process buffer overflow in UMA zone ioctl request\n");
+            error = buffer_overflow_uma_ioctl_handler(io, 0);
+            uprintf("[+] Finished processing buffer overflow in UMA zone ioctl request\n");
+            break;
+        }
+        case DVKM_IOCTL_BUFFER_OVERFLOW_HEAP_UMA_SUBOBJECT:
+        {
+            uprintf("[+] Starting to process buffer overflow in UMA zone subobject ioctl request\n");
+            error = buffer_overflow_uma_ioctl_handler(io, 1);
+            uprintf("[+] Finished processing buffer overflow in UMA zone subobject ioctl request\n");
+            break;
+        }
+        case DVKM_IOCTL_UAF_HEAP:
+        {
+            uprintf("[+] Starting to process heap UAF ioctl request\n");
+            error = uaf_heap_ioctl_handler(io);
+            uprintf("[+] Finished processing heap UAF ioctl request\n");
+            break;
+        }
+        case DVKM_IOCTL_UAF_HEAP_UMA:
+        {
+            uprintf("[+] Starting to process UMA zone UAF ioctl request\n");
+            error = uaf_uma_ioctl_handler(io);
+            uprintf("[+] Finished processing UMA zone UAF ioctl request\n");
+            break;
+        }
+        case DVKM_IOCTL_UAF_STACK:
+        {
+            uprintf("[+] Starting to process stack UAF ioctl request\n");
+            error = uaf_stack_ioctl_handler(io);
+            uprintf("[+] Finished processing stack UAF ioctl request\n");
+            break;
+        }
+        case DVKM_IOCTL_ARBITRARY_READ:
+        {
+            uprintf("[+] Starting to process arbitrary read ioctl request\n");
+            error = arbitrary_read_ioctl_handler(io);
+            uprintf("[+] Finished processing arbitrary read ioctl request\n");
+            break;
+        }
+        case DVKM_IOCTL_ARBITRARY_WRITE:
+        {
+            uprintf("[+] Starting to process arbitrary write ioctl request\n");
+            error = arbitrary_write_ioctl_handler(io);
+            uprintf("[+] Finished processing arbitrary write ioctl request\n");
+            break;
+        }
+        case DVKM_IOCTL_ARBITRARY_INCREMENT:
+        {
+            uprintf("[+] Starting to process arbitrary increment ioctl request\n");
+            error = arbitrary_increment_ioctl_handler(io);
+            uprintf("[+] Finished processing arbitrary increment ioctl request\n");
+            break;
+        }
+        case DVKM_IOCTL_DOUBLE_FETCH:
+        {
+            uprintf("[+] Starting to process double fetch ioctl request\n");
+            error = double_fetch_ioctl_handler(io);
+            uprintf("[+] Finished processing double fetch ioctl request\n");
+            break;
+        }
+        case DVKM_IOCTL_DISABLE_SECURITY:
+        {
+            uprintf("[+] Starting to process disable security mitigation request\n");
+            error = disable_security_mitigation_handler(io);
+            uprintf("[+] Finished processing disable security mitigation request\n");
+            break;
+        }
+        case DVKM_IOCTL_READ_PMAP_TOP:
+        {
+            uprintf("[+] Starting to process read PMAP L0 request\n");
+            error = read_l0(io);
+            uprintf("[+] Finished processing read PMAP L0 request\n");
+            break;
+        }
+        default:
+        {
+            error = EINVAL;
+            break;
+        }
     }
 
     return (error);

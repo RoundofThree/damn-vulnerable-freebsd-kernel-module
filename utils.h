@@ -29,6 +29,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <sys/cdefs.h>
 #include <sys/types.h>
 #include <sys/systm.h>
 #include <sys/param.h>
@@ -39,6 +40,8 @@
 #include <sys/uio.h>
 #include <sys/malloc.h>
 #include <sys/ioccom.h>
+
+#include <cheri/cheric.h>
 
 #include <vm/vm.h>
 #include <vm/uma.h>
@@ -51,6 +54,8 @@
 #include <vm/uma_int.h>
 
 #include <sys/queue.h>
+
+// #define DEBUG
 
 // make the compiler happy for FreeBSD
 #if !__has_feature(capabilities)
@@ -82,9 +87,9 @@
 /* Structs */
 struct dvkm_io {
     /* General I/O fields */
-	void *input_buffer;
+	void * __kerncap input_buffer;
     size_t input_buffer_size;
-    void *output_buffer;
+    void * __kerncap output_buffer;
     size_t output_buffer_size;
 
     /* CheriBSD specific */
@@ -99,7 +104,7 @@ struct dvkm_io {
     size_t alloc_size;  // malloc(9) or UMA zone size
 
     /* UMA specific */
-    char *zone_name;    // XXXR3: possibly I could manually walk memory structs
+    char * __kerncap zone_name;    // XXXR3: possibly I could manually walk memory structs
                         // to get a pointer to zone objects given a name
                         // For now, we just get dvkm_zones, for which we have 
                         // a mapping of uma_zone_t and names. 
@@ -108,12 +113,12 @@ struct dvkm_io {
 
     /* Heap use after free specific */
     int kheap_operation; // eg. KHEAP_MALLOC
-    void *kheap_addr;    // consumed by free
+    uint64_t kheap_addr;    // consumed by free
 
     /* Stack use after free specific */
     
     /* Arbitrary gadgets specific */
-    void *target_addr;  // (kernel) address to read, write or increment
+    uint64_t target_addr;  // (kernel) address to read, write or increment
     int increment;      // how much to increment (can be negative)
 
     /* Double fetch specific */

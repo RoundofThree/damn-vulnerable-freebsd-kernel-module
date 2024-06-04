@@ -35,7 +35,9 @@
 int arbitrary_read_ioctl_handler(struct dvkm_io *io)
 {
     int error, preserve_cheri_caps;
-    void *target_addr, *ubuf;
+    void * __capability ubuf;
+    uint64_t target_addr;
+    void * target_ptr;
     size_t ubufsize;
 
     target_addr = io->target_addr;
@@ -43,10 +45,17 @@ int arbitrary_read_ioctl_handler(struct dvkm_io *io)
     ubufsize = io->output_buffer_size;
     preserve_cheri_caps = io->preserve_cheri_caps;
 
+    // forge
+#ifdef __CHERI_PURE_CAPABILITY__
+    target_ptr = cheri_setaddress(kernel_root_cap, target_addr);
+#else
+    target_ptr = (void *)target_addr;
+#endif
+
     if (preserve_cheri_caps) {
-        error = copyoutcap(target_addr, (__cheri_tocap void * __capability)ubuf, ubufsize);
+        error = copyoutcap(target_ptr, ubuf, ubufsize);
     } else {
-        error = copyout(target_addr, (__cheri_tocap void * __capability)ubuf, ubufsize);
+        error = copyout(target_ptr, ubuf, ubufsize);
     }
 
     return (error);
@@ -55,7 +64,9 @@ int arbitrary_read_ioctl_handler(struct dvkm_io *io)
 int arbitrary_write_ioctl_handler(struct dvkm_io *io)
 {
     int error, preserve_cheri_caps;
-    void *target_addr, *ubuf;
+    void * __capability ubuf;
+    uint64_t target_addr;
+    void * target_ptr;
     size_t ubufsize;
 
     target_addr = io->target_addr;
@@ -63,10 +74,17 @@ int arbitrary_write_ioctl_handler(struct dvkm_io *io)
     ubufsize = io->input_buffer_size;
     preserve_cheri_caps = io->preserve_cheri_caps;
 
+    // forge
+#ifdef __CHERI_PURE_CAPABILITY__
+    target_ptr = cheri_setaddress(kernel_root_cap, target_addr);
+#else
+    target_ptr = (void *)target_addr;
+#endif
+
     if (preserve_cheri_caps) {
-        error = copyincap((__cheri_tocap void * __capability)ubuf, target_addr, ubufsize);
+        error = copyincap(ubuf, target_ptr, ubufsize);
     } else {
-        error = copyin((__cheri_tocap void * __capability)ubuf, target_addr, ubufsize);
+        error = copyin(ubuf, target_ptr, ubufsize);
     }
 
     return (error);
@@ -75,17 +93,25 @@ int arbitrary_write_ioctl_handler(struct dvkm_io *io)
 int arbitrary_increment_ioctl_handler(struct dvkm_io *io)
 {
     int error = 0, preserve_cheri_caps;
-    void *target_addr;
+    uint64_t target_addr;
+    void * target_ptr;
     int increment;
 
     target_addr = io->target_addr;
     preserve_cheri_caps = io->preserve_cheri_caps;
     increment = io->increment;
 
+    // forge
+#ifdef __CHERI_PURE_CAPABILITY__
+    target_ptr = cheri_setaddress(kernel_root_cap, target_addr);
+#else
+    target_ptr = (void *)target_addr;
+#endif
+
     if (preserve_cheri_caps) {
-        *(uintptr_t *)target_addr += increment;
+        *(uintptr_t *)target_ptr += increment;
     } else {
-        *(char *)target_addr += increment;
+        *(char *)target_ptr += increment;
     }
 
     return (error);
@@ -94,16 +120,20 @@ int arbitrary_increment_ioctl_handler(struct dvkm_io *io)
 int read_l0(struct dvkm_io *io)
 {
     int error = 0;
-    void *ubuf;
+    void * __capability ubuf;
     size_t ubufsize;
     void *l0;
 
-    ubuf = io->input_buffer;
-    ubufsize = io->input_buffer_size;
+    ubuf = io->output_buffer;
+    ubufsize = io->output_buffer_size;
 
     l0 = curproc->p_vmspace->vm_pmap.pm_l0;
-
-    error = copyoutcap(&l0, (__cheri_tocap void * __capability)ubuf, ubufsize);
+#ifdef DEBUG
+    uprintf("[DEBUG] l0 = %p\n", l0);
+    uprintf("[DEBUG] ubuf = %p\n", (__cheri_fromcap void *)ubuf);
+    uprintf("[DEBUG] ubuf = 0x%lx\n", ubufsize);
+#endif
+    error = copyout(&l0, ubuf, ubufsize);
     
     return (error);
 }

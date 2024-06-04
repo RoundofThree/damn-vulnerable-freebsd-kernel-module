@@ -32,22 +32,22 @@
 #include "utils.h"
 
 static int __attribute__((no_stack_protector))
-buffer_overflow_stack(void *ubuf, size_t ubufsize, int preserve_cheri_caps, int is_disclosure)
+buffer_overflow_stack(void * __capability ubuf, size_t ubufsize, int preserve_cheri_caps, int is_disclosure)
 {
     char kbuf[KBUFSIZE]; // uninitialized
     int error;
 
     if (is_disclosure) {
         if (preserve_cheri_caps) {
-            error = copyoutcap(kbuf, (__cheri_tocap void * __capability)ubuf, ubufsize);
+            error = copyoutcap(kbuf, ubuf, ubufsize);
         } else {
-            error = copyout(kbuf, (__cheri_tocap void * __capability)ubuf, ubufsize);
+            error = copyout(kbuf, ubuf, ubufsize);
         }
     } else {
         if (preserve_cheri_caps) {
-            error = copyincap((__cheri_tocap const void * __capability)ubuf, kbuf, ubufsize);
+            error = copyincap(ubuf, kbuf, ubufsize);
         } else {
-            error = copyin((__cheri_tocap const void * __capability)ubuf, kbuf, ubufsize);
+            error = copyin(ubuf, kbuf, ubufsize);
         }
     }
 
@@ -55,7 +55,7 @@ buffer_overflow_stack(void *ubuf, size_t ubufsize, int preserve_cheri_caps, int 
 }
 
 static int
-buffer_overflow_stack_subobject(void *ubuf, size_t ubufsize, int preserve_cheri_caps, int is_disclosure)
+buffer_overflow_stack_subobject(void * __capability ubuf, size_t ubufsize, int preserve_cheri_caps, int is_disclosure)
 {
     struct buffer_overflow_obj bo_obj;
     int error;
@@ -65,15 +65,15 @@ buffer_overflow_stack_subobject(void *ubuf, size_t ubufsize, int preserve_cheri_
 
     if (is_disclosure) {
         if (preserve_cheri_caps) {
-            error = copyoutcap(bo_obj.bo_buf, (__cheri_tocap void * __capability)ubuf, ubufsize);
+            error = copyoutcap(bo_obj.bo_buf, ubuf, ubufsize);
         } else {
-            error = copyout(bo_obj.bo_buf, (__cheri_tocap void * __capability)ubuf, ubufsize);
+            error = copyout(bo_obj.bo_buf, ubuf, ubufsize);
         }
     } else {
         if (preserve_cheri_caps) {
-            error = copyincap((__cheri_tocap const void * __capability)ubuf, bo_obj.bo_buf, ubufsize);
+            error = copyincap(ubuf, bo_obj.bo_buf, ubufsize);
         } else {
-            error = copyin((__cheri_tocap const void * __capability)ubuf, bo_obj.bo_buf, ubufsize);
+            error = copyin(ubuf, bo_obj.bo_buf, ubufsize);
         }
     }
 
@@ -84,7 +84,7 @@ int
 buffer_overflow_stack_ioctl_handler(struct dvkm_io *io, int bo_subobject)
 {
     size_t ubufsize;
-    void *ubuf = NULL;
+    void * __capability ubuf = NULL;
     int preserve_cheri_caps, is_disclosure;
     int error;
 
@@ -109,21 +109,21 @@ buffer_overflow_stack_ioctl_handler(struct dvkm_io *io, int bo_subobject)
 /// Kernel malloc(9)
 
 static int
-buffer_overflow_heap(void *ubuf, size_t ubufsize, void *hbuf, int preserve_cheri_caps, int is_disclosure)
+buffer_overflow_heap(void * __capability ubuf, size_t ubufsize, void *hbuf, int preserve_cheri_caps, int is_disclosure)
 {
     int error;
 
     if (is_disclosure) {
         if (preserve_cheri_caps) {
-            error = copyoutcap(hbuf,(__cheri_tocap void * __capability)ubuf, ubufsize);
+            error = copyoutcap(hbuf, ubuf, ubufsize);
         } else {
-            error = copyout(hbuf, (__cheri_tocap void * __capability)ubuf, ubufsize);
+            error = copyout(hbuf, ubuf, ubufsize);
         }
     } else {
         if (preserve_cheri_caps) {
-            error = copyincap((__cheri_tocap const void * __capability)ubuf, hbuf, ubufsize);
+            error = copyincap(ubuf, hbuf, ubufsize);
         } else {
-            error = copyin((__cheri_tocap const void * __capability)ubuf, hbuf, ubufsize);
+            error = copyin(ubuf, hbuf, ubufsize);
         }
     }
 
@@ -132,7 +132,7 @@ buffer_overflow_heap(void *ubuf, size_t ubufsize, void *hbuf, int preserve_cheri
 
 // hardcoded heap buffer size
 static int
-buffer_overflow_heap_subobject(void *ubuf, size_t ubufsize, int preserve_cheri_caps, int is_disclosure)
+buffer_overflow_heap_subobject(void * __capability ubuf, size_t ubufsize, int preserve_cheri_caps, int is_disclosure)
 {
     int error;
     struct buffer_overflow_obj *bo_obj;
@@ -141,15 +141,15 @@ buffer_overflow_heap_subobject(void *ubuf, size_t ubufsize, int preserve_cheri_c
 
     if (is_disclosure) {
         if (preserve_cheri_caps) {
-            error = copyoutcap(bo_obj->bo_buf, (__cheri_tocap void * __capability)ubuf, ubufsize);
+            error = copyoutcap(bo_obj->bo_buf, ubuf, ubufsize);
         } else {
-            error = copyout(bo_obj->bo_buf, (__cheri_tocap void * __capability)ubuf, ubufsize);
+            error = copyout(bo_obj->bo_buf, ubuf, ubufsize);
         }
     } else {
         if (preserve_cheri_caps) {
-            error = copyincap((__cheri_tocap const void * __capability)ubuf, bo_obj->bo_buf, ubufsize);
+            error = copyincap(ubuf, bo_obj->bo_buf, ubufsize);
         } else {
-            error = copyin((__cheri_tocap const void * __capability)ubuf, bo_obj->bo_buf, ubufsize);
+            error = copyin(ubuf, bo_obj->bo_buf, ubufsize);
         }
     }
 
@@ -160,7 +160,7 @@ int
 buffer_overflow_heap_ioctl_handler(struct dvkm_io *io, int bo_subobject)
 {
     size_t ubufsize, alloc_size;
-    void *ubuf = NULL;
+    void * __capability ubuf = NULL;
     int preserve_cheri_caps, is_disclosure;
     void *hbuf;
     int error;
@@ -188,7 +188,7 @@ buffer_overflow_heap_ioctl_handler(struct dvkm_io *io, int bo_subobject)
 /// Specific UMA zone
 
 static int
-buffer_overflow_uma(void *ubuf, size_t ubufsize, uma_zone_t dvkm_zone, int preserve_cheri_caps, int is_disclosure)
+buffer_overflow_uma(void * __capability ubuf, size_t ubufsize, uma_zone_t dvkm_zone, int preserve_cheri_caps, int is_disclosure)
 {
     int error;
     void *hbuf;
@@ -197,15 +197,15 @@ buffer_overflow_uma(void *ubuf, size_t ubufsize, uma_zone_t dvkm_zone, int prese
 
     if (is_disclosure) {
         if (preserve_cheri_caps) {
-            error = copyoutcap(hbuf, (__cheri_tocap void * __capability)ubuf, ubufsize);
+            error = copyoutcap(hbuf, ubuf, ubufsize);
         } else {
-            error = copyout(hbuf, (__cheri_tocap void * __capability)ubuf, ubufsize);
+            error = copyout(hbuf, ubuf, ubufsize);
         }
     } else {
         if (preserve_cheri_caps) {
-            error = copyincap((__cheri_tocap const void * __capability)ubuf, hbuf, ubufsize);
+            error = copyincap(ubuf, hbuf, ubufsize);
         } else {
-            error = copyin((__cheri_tocap const void * __capability)ubuf, hbuf, ubufsize);
+            error = copyin(ubuf, hbuf, ubufsize);
         }
     }
 
@@ -213,7 +213,7 @@ buffer_overflow_uma(void *ubuf, size_t ubufsize, uma_zone_t dvkm_zone, int prese
 }
 
 static int
-buffer_overflow_uma_subobject(void *ubuf, size_t ubufsize, uma_zone_t dvkm_zone, int preserve_cheri_caps, int is_disclosure)
+buffer_overflow_uma_subobject(void * __capability ubuf, size_t ubufsize, uma_zone_t dvkm_zone, int preserve_cheri_caps, int is_disclosure)
 {
     int error;
     struct buffer_overflow_obj *bo_obj;
@@ -222,15 +222,15 @@ buffer_overflow_uma_subobject(void *ubuf, size_t ubufsize, uma_zone_t dvkm_zone,
 
     if (is_disclosure) {
         if (preserve_cheri_caps) {
-            error = copyoutcap(bo_obj->bo_buf, (__cheri_tocap void * __capability)ubuf, ubufsize);
+            error = copyoutcap(bo_obj->bo_buf, ubuf, ubufsize);
         } else {
-            error = copyout(bo_obj->bo_buf, (__cheri_tocap void * __capability)ubuf, ubufsize);
+            error = copyout(bo_obj->bo_buf, ubuf, ubufsize);
         }
     } else {
         if (preserve_cheri_caps) {
-            error = copyincap((__cheri_tocap const void * __capability)ubuf, bo_obj->bo_buf, ubufsize);
+            error = copyincap(ubuf, bo_obj->bo_buf, ubufsize);
         } else {
-            error = copyin((__cheri_tocap const void * __capability)ubuf, bo_obj->bo_buf, ubufsize);
+            error = copyin(ubuf, bo_obj->bo_buf, ubufsize);
         }
     }
 
@@ -241,7 +241,7 @@ int
 buffer_overflow_uma_ioctl_handler(struct dvkm_io *io, int bo_subobject)
 {
     size_t ubufsize, alloc_size, dvkm_zone_idx;
-    void *ubuf = NULL;
+    void * __capability ubuf = NULL;
     int preserve_cheri_caps, is_disclosure;
     char zone_name[ZONE_NAME_MAXLEN + 1];
     uma_zone_t dvkm_zone;
@@ -262,7 +262,7 @@ buffer_overflow_uma_ioctl_handler(struct dvkm_io *io, int bo_subobject)
         dvkm_zone = dvkm_zones[0];
         error = buffer_overflow_uma_subobject(ubuf, ubufsize, dvkm_zone, preserve_cheri_caps, is_disclosure);
     } else {
-        error = copyinstr((__cheri_tocap void * __capability)io->zone_name, zone_name, ZONE_NAME_MAXLEN + 1, NULL);
+        error = copyinstr(io->zone_name, zone_name, ZONE_NAME_MAXLEN + 1, NULL);
         if (error) {
             return (error);
         }
