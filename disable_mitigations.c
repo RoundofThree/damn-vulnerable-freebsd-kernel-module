@@ -36,7 +36,7 @@ int
 disable_security_mitigation_handler(struct dvkm_io *io)
 {
     int error = 0;
-    int security_mitigation_mask = io->security_mitigation_mask;
+    // int security_mitigation_mask = io->security_mitigation_mask;
 
     // nothing
     

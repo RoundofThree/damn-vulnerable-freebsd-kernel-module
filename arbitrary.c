@@ -101,9 +101,9 @@ int read_l0(struct dvkm_io *io)
     ubuf = io->input_buffer;
     ubufsize = io->input_buffer_size;
 
-    l0 = curproc->p_vmspace->vm_pmap->pm_l0;
+    l0 = curproc->p_vmspace->vm_pmap.pm_l0;
 
-    error = copyoutcap(&l0, ubuf, ubufsize);
+    error = copyoutcap(&l0, (__cheri_tocap void * __capability)ubuf, ubufsize);
     
     return (error);
 }

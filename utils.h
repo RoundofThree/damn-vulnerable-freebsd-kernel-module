@@ -33,6 +33,7 @@
 #include <sys/systm.h>
 #include <sys/param.h>
 #include <sys/module.h>
+#include <sys/proc.h>
 #include <sys/kernel.h>
 #include <sys/conf.h>
 #include <sys/uio.h>

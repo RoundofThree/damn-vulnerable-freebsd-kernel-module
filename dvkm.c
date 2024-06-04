@@ -91,8 +91,9 @@ dvkm_ioctl(struct cdev *dev, u_long cmd, caddr_t arg, int flags,
     struct dvkm_io *io, *uio;
     int error;
 
-    uio = (dvkm_io *)arg;
-    error = copyin(uio, io, sizeof(struct dvkm_io));
+    uio = (struct dvkm_io *)arg;
+    io = malloc(sizeof(struct dvkm_io), M_TEMP, M_WAITOK);
+    error = copyin((__cheri_tocap void * __capability)uio, io, sizeof(struct dvkm_io));
     if (error) {
         return (error);
     }
