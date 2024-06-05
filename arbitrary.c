@@ -30,6 +30,9 @@
  */
 
 #include "utils.h"
+#include <machine/pmap.h>  // machine dependent 
+
+extern struct pmap kernel_pmap_store;
 
 // subject to PAN/SMAP
 int arbitrary_read_ioctl_handler(struct dvkm_io *io)
@@ -122,18 +125,29 @@ int read_l0(struct dvkm_io *io)
     int error = 0;
     void * __capability ubuf;
     size_t ubufsize;
-    void *l0;
+    pmap_t pmap;
+    pd_entry_t *l0;
 
     ubuf = io->output_buffer;
     ubufsize = io->output_buffer_size;
 
-    l0 = curproc->p_vmspace->vm_pmap.pm_l0;
+    // get the pmap for the current process
+    pmap = vmspace_pmap(curproc->p_vmspace);
+    l0 = pmap->pm_l0;
 #ifdef DEBUG
-    uprintf("[DEBUG] l0 = %p\n", l0);
+    uint64_t ttbr = pmap->pm_ttbr;
+    pd_entry_t *kl0 = kernel_pmap->pm_l0;
+    uprintf("[DEBUG] curproc pm_l0 = %p\n", l0);
+    uprintf("[DEBUG] TTBR = 0x%lx\n", ttbr);
+    uprintf("[DEBUG] kernel_pmap l0 = %p\n", kl0);
     uprintf("[DEBUG] ubuf = %p\n", (__cheri_fromcap void *)ubuf);
     uprintf("[DEBUG] ubufsize = 0x%lx\n", ubufsize);
 #endif
-    error = copyoutcap(&l0, ubuf, ubufsize);
+    if (ubufsize < sizeof(uintptr_t)) {
+        error = copyout(&l0, ubuf, ubufsize);
+    } else {
+        error = copyoutcap(&l0, ubuf, ubufsize);
+    }
     
     return (error);
 }

@@ -60,6 +60,10 @@ make
 
 Build artifacts are in `obj/`.
 
+### Issues
+
+- Due to CHERI_CAPREVOKE and CHERI_CAPREVOKE_STATS macros, the offsets of `vm_map` emitted by the compiler (native compiling in a Morello box) won't match the kernel offsets.
+
 ## References
 
 - [Damn Vulnerable Kernel Module for kernel fuzzing](https://github.com/hardik05/Damn_Vulnerable_Kernel_Module/tree/main)

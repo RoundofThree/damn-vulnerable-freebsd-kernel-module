@@ -40,8 +40,13 @@
 #include <sys/uio.h>
 #include <sys/malloc.h>
 #include <sys/ioccom.h>
+#include <sys/pcpu.h>
 
-// #include <cheri/cheric.h>
+#include <cheri/cheric.h>
+
+// otherwise it will break struct offsets
+#define CHERI_CAPREVOKE
+#define CHERI_CAPREVOKE_STATS
 
 #include <vm/vm.h>
 #include <vm/uma.h>
@@ -52,10 +57,10 @@
 #include <vm/vm_kern.h>
 #include <vm/vm_extern.h>
 #include <vm/uma_int.h>
+#include <vm/pmap.h>
 
 #include <sys/queue.h>
 
-#define DEBUG
 
 // make the compiler happy for FreeBSD
 // #if !__has_feature(capabilities)

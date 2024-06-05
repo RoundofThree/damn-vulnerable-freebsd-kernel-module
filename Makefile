@@ -9,7 +9,7 @@ SRCS=   dvkm.h utils.h dvkm.c \
 
 DEBUG_FLAGS=-g
 COPTFLAGS=-O0
-CFLAGS=-O0 -pipe
+CFLAGS=-O0 -pipe # -DDEBUG
 
 .OBJDIR: ${.CURDIR}/obj
 

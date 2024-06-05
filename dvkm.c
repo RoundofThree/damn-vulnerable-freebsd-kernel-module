@@ -85,7 +85,7 @@ dvkm_write(struct cdev *dev, struct uio *uio, int ioflag)
 }
 
 static int
-dvkm_ioctl(struct cdev *dev, unsigned long cmd, caddr_t arg, int flags,
+dvkm_ioctl(struct cdev *dev, u_long cmd, caddr_t arg, int flags,
     struct thread *td)
 {
     struct dvkm_io *io;
@@ -94,12 +94,7 @@ dvkm_ioctl(struct cdev *dev, unsigned long cmd, caddr_t arg, int flags,
     io = (struct dvkm_io *)arg;
 
 #ifdef DEBUG
-    uprintf("[DEBUG] cmd = %lx\n", cmd);
-    uprintf("[DEBUG] DVKM_IOCTL_READ_PMAP_TOP = %lx\n", DVKM_IOCTL_READ_PMAP_TOP);
-
-    if (cmd == DVKM_IOCTL_READ_PMAP_TOP) {
-        uprintf("[DEBUG] I'm in!\n");
-    }
+    uprintf("[DEBUG] IOCTL code = %lx\n", cmd);
 #endif
 
     switch (cmd) {
