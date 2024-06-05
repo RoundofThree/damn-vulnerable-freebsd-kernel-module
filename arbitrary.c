@@ -36,7 +36,7 @@ int arbitrary_read_ioctl_handler(struct dvkm_io *io)
 {
     int error, preserve_cheri_caps;
     void * __capability ubuf;
-    uint64_t target_addr;
+    vm_offset_t target_addr;
     void * target_ptr;
     size_t ubufsize;
 
@@ -65,7 +65,7 @@ int arbitrary_write_ioctl_handler(struct dvkm_io *io)
 {
     int error, preserve_cheri_caps;
     void * __capability ubuf;
-    uint64_t target_addr;
+    vm_offset_t target_addr;
     void * target_ptr;
     size_t ubufsize;
 
@@ -93,7 +93,7 @@ int arbitrary_write_ioctl_handler(struct dvkm_io *io)
 int arbitrary_increment_ioctl_handler(struct dvkm_io *io)
 {
     int error = 0, preserve_cheri_caps;
-    uint64_t target_addr;
+    vm_offset_t target_addr;
     void * target_ptr;
     int increment;
 
@@ -131,9 +131,9 @@ int read_l0(struct dvkm_io *io)
 #ifdef DEBUG
     uprintf("[DEBUG] l0 = %p\n", l0);
     uprintf("[DEBUG] ubuf = %p\n", (__cheri_fromcap void *)ubuf);
-    uprintf("[DEBUG] ubuf = 0x%lx\n", ubufsize);
+    uprintf("[DEBUG] ubufsize = 0x%lx\n", ubufsize);
 #endif
-    error = copyout(&l0, ubuf, ubufsize);
+    error = copyoutcap(&l0, ubuf, ubufsize);
     
     return (error);
 }

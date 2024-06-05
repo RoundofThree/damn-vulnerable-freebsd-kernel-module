@@ -71,7 +71,7 @@ dvkm_read(struct cdev *dev, struct uio *uio, int ioflag)
 {
     int error = 0;
 
-    uprintf("Reading from device \"dvkm\".\n");
+    uprintf("Reading from device \"dvkm\" does nothing.\n");
     return (error);
 }
 
@@ -80,7 +80,7 @@ dvkm_write(struct cdev *dev, struct uio *uio, int ioflag)
 {
     int error = 0;
 
-    uprintf("Writing to device \"dvkm\".\n");
+    uprintf("Writing to device \"dvkm\" does nothing.\n");
     return (error);
 }
 
@@ -98,7 +98,7 @@ dvkm_ioctl(struct cdev *dev, unsigned long cmd, caddr_t arg, int flags,
     uprintf("[DEBUG] DVKM_IOCTL_READ_PMAP_TOP = %lx\n", DVKM_IOCTL_READ_PMAP_TOP);
 
     if (cmd == DVKM_IOCTL_READ_PMAP_TOP) {
-        uprintf("[DEBUG] I m in!\n");
+        uprintf("[DEBUG] I'm in!\n");
     }
 #endif
 

@@ -38,7 +38,7 @@ int uaf_heap_ioctl_handler(struct dvkm_io *io)
     int error = 0;
     int kheap_operation;
     void * __capability ubuf, *addr;
-    uint64_t kheap_addr;
+    vm_offset_t kheap_addr;
     void *kheap_ptr;
     size_t alloc_size, ubufsize;
 
@@ -82,7 +82,7 @@ int uaf_uma_ioctl_handler(struct dvkm_io *io)
     int error = 0;
     int kheap_operation;
     void * __capability ubuf, *addr;
-    uint64_t kheap_addr;
+    vm_offset_t kheap_addr;
     void *kheap_ptr;
     uma_zone_t dvkm_zone = NULL;
     size_t dvkm_zone_idx, ubufsize, alloc_size;

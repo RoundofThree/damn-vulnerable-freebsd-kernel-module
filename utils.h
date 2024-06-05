@@ -41,7 +41,7 @@
 #include <sys/malloc.h>
 #include <sys/ioccom.h>
 
-#include <cheri/cheric.h>
+// #include <cheri/cheric.h>
 
 #include <vm/vm.h>
 #include <vm/uma.h>
@@ -55,22 +55,22 @@
 
 #include <sys/queue.h>
 
-// #define DEBUG
+#define DEBUG
 
 // make the compiler happy for FreeBSD
-#if !__has_feature(capabilities)
+// #if !__has_feature(capabilities)
 
-#define __cheri_tocap
-#define __cheri_fromcap
-#define __cheri_offset
-#define __cheri_addr
+// #define __cheri_tocap
+// #define __cheri_fromcap
+// #define __cheri_offset
+// #define __cheri_addr
 
-#define	copyoutcap	copyout
-#define copyincap   copyin
+// #define	copyoutcap	copyout
+// #define copyincap   copyin
 
-#define	__capability
+// #define	__capability
 
-#endif
+// #endif
 
 /* Constants */
 #define KBUFSIZE 0x100
@@ -113,12 +113,12 @@ struct dvkm_io {
 
     /* Heap use after free specific */
     int kheap_operation; // eg. KHEAP_MALLOC
-    uint64_t kheap_addr;    // consumed by free
+    vm_offset_t kheap_addr;    // consumed by free
 
     /* Stack use after free specific */
     
     /* Arbitrary gadgets specific */
-    uint64_t target_addr;  // (kernel) address to read, write or increment
+    vm_offset_t target_addr;  // (kernel) address to read, write or increment
     int increment;      // how much to increment (can be negative)
 
     /* Double fetch specific */

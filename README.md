@@ -1,6 +1,6 @@
-# DVKM for FreeBSD and CheriBSD
+# DVKM for CheriBSD
 
-Damn Vulnerable Kernel Module for FreeBSD and CheriBSD.
+Damn Vulnerable Kernel Module for FreeBSD (untested) and CheriBSD (purecap and hybrid kernels).
 This is a work-in-progress research prototype. Analysis in another repository.
 
 ## Vulnerabilities
@@ -43,14 +43,14 @@ This is a work-in-progress research prototype. Analysis in another repository.
 
 ## Build instructions
 
-In a FreeBSD host,
+In a FreeBSD host, (untested)
 ```sh
 make
 ```
 
 In a CheriBSD host, to build a A64 module for a hybrid kernel,
 ```sh
-env MACHINE_ARCH=aarch64 MACHINE=arm64 make
+env MACHINE_ARCH=aarch64 make
 ```
 
 And to build a C64 module for a purecap kernel,

@@ -7,6 +7,10 @@ SRCS=   dvkm.h utils.h dvkm.c \
 	double_fetch.c \
 	disable_mitigations.c
 
+DEBUG_FLAGS=-g
+COPTFLAGS=-O0
+CFLAGS=-O0 -pipe
+
 .OBJDIR: ${.CURDIR}/obj
 
 .include <bsd.kmod.mk>

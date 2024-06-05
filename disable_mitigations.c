@@ -31,7 +31,6 @@
 
 #include "utils.h"
 
-
 int
 disable_security_mitigation_handler(struct dvkm_io *io)
 {
