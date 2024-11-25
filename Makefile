@@ -13,4 +13,8 @@ CFLAGS=-O0 -pipe # -DDEBUG
 
 .OBJDIR: ${.CURDIR}/obj
 
+# We don't need ZFSTOP but bsd.kmod.mk requires it
+SRCTOP=/usr/src
+ZFSTOP=${SRCTOP}/sys/contrib/openzfs
+
 .include <bsd.kmod.mk>
