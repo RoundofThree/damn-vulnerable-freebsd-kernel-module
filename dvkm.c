@@ -93,10 +93,6 @@ dvkm_ioctl(struct cdev *dev, u_long cmd, caddr_t arg, int flags,
 
     io = (struct dvkm_io *)arg;
 
-#ifdef DEBUG
-    uprintf("[DEBUG] IOCTL code = %lx\n", cmd);
-#endif
-
     switch (cmd) {
         case DVKM_IOCTL_BUFFER_OVERFLOW_STACK:
         {

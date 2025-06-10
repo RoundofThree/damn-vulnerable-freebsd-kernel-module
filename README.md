@@ -1,7 +1,7 @@
 # DVKM for CheriBSD
 
-Damn Vulnerable Kernel Module for FreeBSD (untested) and CheriBSD (purecap and hybrid kernels).
-This is a work-in-progress research prototype. Analysis in another repository.
+Damn Vulnerable Kernel Module for FreeBSD and CheriBSD (purecap kernel).
+This is a work-in-progress research prototype tool.
 
 ## Vulnerabilities
 
@@ -43,7 +43,9 @@ This is a work-in-progress research prototype. Analysis in another repository.
 
 ## Build instructions
 
-In a FreeBSD host, (untested)
+It's only tested with clang. 
+
+In a FreeBSD host,
 ```sh
 make
 ```

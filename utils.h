@@ -42,7 +42,9 @@
 #include <sys/ioccom.h>
 #include <sys/pcpu.h>
 
+#if __has_feature(capabilities)
 #include <cheri/cheric.h>
+#endif
 
 // otherwise it will break struct offsets
 #define CHERI_CAPREVOKE
@@ -63,19 +65,15 @@
 
 
 // make the compiler happy for FreeBSD
-// #if !__has_feature(capabilities)
+#if !__has_feature(capabilities)
 
-// #define __cheri_tocap
-// #define __cheri_fromcap
-// #define __cheri_offset
-// #define __cheri_addr
+#define	copyoutcap	copyout
+#define copyincap   copyin
 
-// #define	copyoutcap	copyout
-// #define copyincap   copyin
+#define	__capability
+#define __kerncap
 
-// #define	__capability
-
-// #endif
+#endif
 
 /* Constants */
 #define KBUFSIZE 0x100
